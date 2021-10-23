@@ -21,14 +21,14 @@ io.on('connection', (socket) => {
 
     socket.on('sendMessage', (msg, cb) => {
         const filter = new Filter()
-        if(filter.isProfane(msg)) return cb("No profanity in messages please")
+        if (filter.isProfane(msg)) return cb("No profanity in messages please")
 
         io.emit('message', generateMessage(msg))
         cb()
     })
 
     socket.on('sendLocation', (coords, cb) => {
-        io.emit('mapsURL',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        io.emit('mapsURL', generateMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         cb()
     })
 
@@ -38,5 +38,5 @@ io.on('connection', (socket) => {
 })
 
 server.listen(port, () => {
-  console.log('server started on port', port);
+    console.log('server started on port', port);
 });

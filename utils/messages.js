@@ -1,4 +1,4 @@
-function generateMessage(text){
+function generateMessage(text) {
     return {
         text: text,
         timestamp: new Date().getTime()

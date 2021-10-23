@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>chat app</head>
-    <body>
-        <div id="messages"></div>
-        
-        <form> 
-            <input name="message" placeHolder="Write message here">
+
+<head>
+    <title>Chat App</title>
+    <link rel="icon" href="/img/favicon.png">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    Chat App
+	<div id="messages"></div>
+
+	<form>
+		<input name="message" placeHolder="Write message here">
             <button>submit</button>
         </form> 
         
@@ -20,7 +27,7 @@
 
     <script id="mapsURLTemplate" type="text/html">
         <div>
-            <p><a href="{{url}}" target="_blank">My current Location</a></p>
+            <p>{{timestamp}} <a href="{{url}}" target="_blank">My current Location</a></p>
         </div>
     </script>
 

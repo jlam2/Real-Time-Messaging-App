@@ -15,20 +15,23 @@ const mapsURLTemplate = document.querySelector('#mapsURLTemplate').innerHTML
 
 //display msg on the page with timestamp
 socket.on('message', (msg) => {
-    console.log(msg)
-    
+    console.log(msg.text)
+
     const html = Mustache.render(msgTemplate, {
-        timestamp: moment(msg.timestamp).format('h:mma'), 
+        timestamp: moment(msg.timestamp).format('h:mm a'),
         message: msg.text
     })
     messages.insertAdjacentHTML('beforeend', html)
 })
 
-//displays a link the a users location
-socket.on('mapsURL', (url) => {
-    console.log(url)
+//displays a message link of a users location
+socket.on('mapsURL', (msg) => {
+    console.log(msg.text)
 
-    const html = Mustache.render(mapsURLTemplate, {url: url})
+    const html = Mustache.render(mapsURLTemplate, {
+        timestamp: moment(msg.timestamp).format('h:mm a'),
+        url: msg.text
+    })
     messages.insertAdjacentHTML('beforeend', html)
 })
 
@@ -41,20 +44,20 @@ messageForm.addEventListener('submit', (e) => {
         messageFormButton.removeAttribute('disabled')
         messageFormInput.value = ''
         messageFormInput.focus()
-        
-        if(error){return console.log(error)}
+
+        if (error) { return console.log(error) }
         console.log('Message delivered')
     })
 })
 
 document.querySelector('#sendLocation').addEventListener('click', () => {
-    if(!navigator.geolocation) return alert('Geolocation not supported by browser')
+    if (!navigator.geolocation) return alert('Geolocation not supported by browser')
 
     sendLocationButton.setAttribute('disabled', 'disabled')
 
     navigator.geolocation.getCurrentPosition((pos) => {
-        socket.emit('sendLocation', 
-            {latitude: pos.coords.latitude, longitude: pos.coords.longitude }, 
+        socket.emit('sendLocation',
+            { latitude: pos.coords.latitude, longitude: pos.coords.longitude },
             () => {
                 sendLocationButton.removeAttribute('disabled')
                 console.log("Location Shared")
