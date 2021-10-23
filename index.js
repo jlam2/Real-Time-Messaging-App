@@ -16,11 +16,11 @@ app.use(express.static(__dirname + '/public'))
 io.on('connection', (socket) => {
     console.log('New web socket connection')
 
-    socket.emit('message', generateMessage('Welcome to the chat app!'))
-    socket.broadcast.emit('message', generateMessage('A new user has joined'))
-
     socket.on('join_room', ({username, room}) => {
         socket.join(room)
+
+        socket.emit('message', generateMessage('Welcome to the chat app!'))
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
     })
 
     socket.on('send_message', (msg, cb) => {
