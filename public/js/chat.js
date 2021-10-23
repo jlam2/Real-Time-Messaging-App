@@ -7,13 +7,28 @@ const messageFormButton = messageForm.querySelector('button')
 const sendLocationButton = document.querySelector('#sendLocation')
 const messages = document.querySelector('#messages')
 
+
 //templates
 const msgTemplate = document.querySelector('#msgTemplate').innerHTML
+const mapsURLTemplate = document.querySelector('#mapsURLTemplate').innerHTML
 
+
+//display msg on the page with timestamp
 socket.on('message', (msg) => {
     console.log(msg)
     
-    const html = Mustache.render(msgTemplate, {message: msg})
+    const html = Mustache.render(msgTemplate, {
+        timestamp: moment(msg.timestamp).format('h:mma'), 
+        message: msg.text
+    })
+    messages.insertAdjacentHTML('beforeend', html)
+})
+
+//displays a link the a users location
+socket.on('mapsURL', (url) => {
+    console.log(url)
+
+    const html = Mustache.render(mapsURLTemplate, {url: url})
     messages.insertAdjacentHTML('beforeend', html)
 })
 
@@ -39,7 +54,7 @@ document.querySelector('#sendLocation').addEventListener('click', () => {
 
     navigator.geolocation.getCurrentPosition((pos) => {
         socket.emit('sendLocation', 
-            {latitude: pos.coords.longitude ,longitude: pos.coords.latitude}, 
+            {latitude: pos.coords.latitude, longitude: pos.coords.longitude }, 
             () => {
                 sendLocationButton.removeAttribute('disabled')
                 console.log("Location Shared")
