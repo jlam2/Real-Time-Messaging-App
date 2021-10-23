@@ -19,7 +19,11 @@ io.on('connection', (socket) => {
     socket.emit('message', generateMessage('Welcome to the chat app!'))
     socket.broadcast.emit('message', generateMessage('A new user has joined'))
 
-    socket.on('sendMessage', (msg, cb) => {
+    socket.on('join_room', ({username, room}) => {
+        socket.join(room)
+    })
+
+    socket.on('send_message', (msg, cb) => {
         const filter = new Filter()
         if (filter.isProfane(msg)) return cb("No profanity in messages please")
 
@@ -27,8 +31,8 @@ io.on('connection', (socket) => {
         cb()
     })
 
-    socket.on('sendLocation', (coords, cb) => {
-        io.emit('mapsURL', generateMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+    socket.on('send_location', (coords, cb) => {
+        io.emit('maps_URL', generateMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         cb()
     })
 
