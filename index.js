@@ -4,7 +4,7 @@ const socketIO = require('socket.io')
 const Filter = require('bad-words')
 
 const generateMessage = require('./utils/messages.js')
-const {addUser, removeUser, getUser, getUsersInRoom} = require('./utils/users.js')
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users.js')
 
 const app = express();
 const server = http.createServer(app)
@@ -17,15 +17,20 @@ app.use(express.static(__dirname + '/public'))
 io.on('connection', (socket) => {
     console.log('New web socket connection')
 
-    socket.on('join_room', ({username, room}, cb) => {
-        const {error, user} = addUser(socket.id, username, room)
+    socket.on('join_room', ({ username, room }, cb) => {
+        const { error, user } = addUser(socket.id, username, room)
 
-        if(error) return cb(error)
+        if (error) return cb(error)
 
         socket.join(user.room)
 
-        socket.emit('message', generateMessage('system', 'Welcome to the chat app!'))
-        socket.broadcast.to(user.room).emit('message', generateMessage('system', `${user.username} has joined!`))
+        socket.emit('message', generateMessage('System', 'Welcome to the chat app!'))
+        socket.broadcast.to(user.room).emit('message', generateMessage('System', `${user.username} has joined!`))
+        io.to(user.room).emit('room_data', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
+
         cb()
     })
 
@@ -50,7 +55,13 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
 
-        if(user) io.to(user.room).emit('message', generateMessage('system', `${user.username} has left`))
+        if (user) {
+            io.to(user.room).emit('message', generateMessage('System', `${user.username} has left`))
+            io.to(user.room).emit('room_data', {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            })
+        }
     })
 })
 

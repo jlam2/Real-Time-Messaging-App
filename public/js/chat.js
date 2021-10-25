@@ -11,6 +11,7 @@ const messages = document.querySelector('#messages')
 //templates
 const msgTemplate = document.querySelector('#msgTemplate').innerHTML
 const mapsURLTemplate = document.querySelector('#mapsURLTemplate').innerHTML
+const sidebarTemplate = document.querySelector('#sidebarTemplate').innerHTML
 
 //options
 const {username, room} = Qs.parse(location.search, { ignoreQueryPrefix: true })
@@ -37,6 +38,11 @@ socket.on('maps_URL', (msg) => {
         url: msg.text
     })
     messages.insertAdjacentHTML('beforeend', html)
+})
+
+socket.on('room_data', ({room, users}) => {
+    const html = Mustache.render(sidebarTemplate, {room, users})
+    document.querySelector('#sidebar').innerHTML = html
 })
 
 //send user message to server

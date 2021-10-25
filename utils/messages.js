@@ -1,7 +1,7 @@
 function generateMessage(username, text) {
     return {
-        username: username,
-        text: text,
+        username,
+        text,
         timestamp: new Date().getTime()
     }
 }
