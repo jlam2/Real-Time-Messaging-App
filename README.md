@@ -1,7 +1,7 @@
-# Node-Real-Time-Chat-App
-Chat messaging app using socket.io
-
-HTML templating with Mustache
+# Real-Time-Messaging-App
+Chat messaging app using socket.io 
+Backend with Node.js
+HTML templating with Mustache  
 
 ## Setup
 
