@@ -14,4 +14,4 @@ HTML templating with Mustache
 3. From there you can join a room by entering a username and room name
 4. Open other tabs and do the same process as before to simulate other users.  
 
-&emsp; Optionally you can deploy to a live server like aws or Heroku to have others connect to the app online
+&emsp; Optionally, you can deploy to a live server like aws or Heroku to have others connect to the app online
