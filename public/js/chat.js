@@ -20,6 +20,7 @@ socket.on('message', (msg) => {
     console.log(msg.text)
 
     const html = Mustache.render(msgTemplate, {
+        username: msg.username,
         timestamp: moment(msg.timestamp).format('h:mm a'),
         message: msg.text
     })
@@ -31,6 +32,7 @@ socket.on('maps_URL', (msg) => {
     console.log(msg.text)
 
     const html = Mustache.render(mapsURLTemplate, {
+        username: msg.username,
         timestamp: moment(msg.timestamp).format('h:mm a'),
         url: msg.text
     })
@@ -70,4 +72,9 @@ sendLocationButton.addEventListener('click', () => {
     })
 })
 
-socket.emit('join_room', {username, room})
+socket.emit('join_room', {username, room}, (error) => {
+    if(error) {
+        alert(error)
+        location.href = '/'
+    } 
+})

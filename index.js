@@ -4,6 +4,7 @@ const socketIO = require('socket.io')
 const Filter = require('bad-words')
 
 const generateMessage = require('./utils/messages.js')
+const {addUser, removeUser, getUser, getUsersInRoom} = require('./utils/users.js')
 
 const app = express();
 const server = http.createServer(app)
@@ -16,28 +17,40 @@ app.use(express.static(__dirname + '/public'))
 io.on('connection', (socket) => {
     console.log('New web socket connection')
 
-    socket.on('join_room', ({username, room}) => {
-        socket.join(room)
+    socket.on('join_room', ({username, room}, cb) => {
+        const {error, user} = addUser(socket.id, username, room)
 
-        socket.emit('message', generateMessage('Welcome to the chat app!'))
-        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+        if(error) return cb(error)
+
+        socket.join(user.room)
+
+        socket.emit('message', generateMessage('system', 'Welcome to the chat app!'))
+        socket.broadcast.to(user.room).emit('message', generateMessage('system', `${user.username} has joined!`))
+        cb()
     })
 
     socket.on('send_message', (msg, cb) => {
+        const user = getUser(socket.id)
+
         const filter = new Filter()
         if (filter.isProfane(msg)) return cb("No profanity in messages please")
 
-        io.emit('message', generateMessage(msg))
+        io.to(user.room).emit('message', generateMessage(user.username, msg))
         cb()
     })
 
     socket.on('send_location', (coords, cb) => {
-        io.emit('maps_URL', generateMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        const user = getUser(socket.id)
+
+        const msg = `https://google.com/maps?q=${coords.latitude},${coords.longitude}`
+        io.to(user.room).emit('maps_URL', generateMessage(user.username, msg))
         cb()
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', generateMessage('A user has left'))
+        const user = removeUser(socket.id)
+
+        if(user) io.to(user.room).emit('message', generateMessage('system', `${user.username} has left`))
     })
 })
 
