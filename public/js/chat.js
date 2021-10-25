@@ -16,9 +16,25 @@ const sidebarTemplate = document.querySelector('#sidebarTemplate').innerHTML
 //options
 const {username, room} = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
+function autoscroll(){
+    const latestMessage = messages.lastElementChild
+    latestMessage.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"})
+
+    //manual way with math
+    // const latestMessageHeight = latestMessage.offsetHeight + parseInt(getComputedStyle(latestMessage).marginBottom)
+    // const containerHeight = messages.scrollHeight
+    // const visibleHeight = messages.offsetHeight
+    // const scrollOffset = messages.scrollTop + visibleHeight //how much have we scrolled down on the messages
+
+    //scroll down to bottom if I was scrolled to the bottom before latest message
+    // if( scrollOffset >= containerHeight - latestMessageHeight  ){
+    //     messages.scrollTop = messages.scrollHeight - visibleHeight
+    // }
+}
+
 //display msg on the page with timestamp
 socket.on('message', (msg) => {
-    console.log(msg.text)
+    //console.log(msg.text)
 
     const html = Mustache.render(msgTemplate, {
         username: msg.username,
@@ -26,11 +42,12 @@ socket.on('message', (msg) => {
         message: msg.text
     })
     messages.insertAdjacentHTML('beforeend', html)
+    autoscroll()
 })
 
 //displays a message link of a users location
 socket.on('maps_URL', (msg) => {
-    console.log(msg.text)
+    //console.log(msg.text)
 
     const html = Mustache.render(mapsURLTemplate, {
         username: msg.username,
@@ -38,6 +55,7 @@ socket.on('maps_URL', (msg) => {
         url: msg.text
     })
     messages.insertAdjacentHTML('beforeend', html)
+    autoscroll()
 })
 
 socket.on('room_data', ({room, users}) => {
